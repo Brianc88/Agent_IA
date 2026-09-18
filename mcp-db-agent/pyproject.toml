@@ -1,0 +1,23 @@
+[project]
+name = "mcp-db-agent"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Brianc88", email = "bricavi22@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "mcp[cli]>=2.2.0",
+    "pydantic>=2.13.5",
+    "pydantic-settings>=2.15.0",
+    "pyodbc>=5.3.0",
+    "python-dotenv>=1.2.3",
+]
+
+[project.scripts]
+mcp-db-agent = "mcp_db_agent:main"
+
+[build-system]
+requires = ["uv_build>=0.12.13,<0.13.0"]
+build-backend = "uv_build"
