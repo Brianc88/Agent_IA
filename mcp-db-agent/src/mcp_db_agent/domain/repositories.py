@@ -45,3 +45,12 @@ class IndicatorExecutorRepository(Protocol):
     ) -> list[dict]:
         """Ejecuta el SP dado y devuelve las filas como lista de diccionarios."""
         ...
+class ValueCatalogRepository(Protocol):
+    """Contrato para obtener valores válidos reales de un parámetro categórico."""
+
+    def obtener_valores_validos(self, nombre_parametro: str) -> list[str] | None:
+        """
+        Devuelve la lista de valores reales para ese parámetro.
+        None si el parámetro no tiene una fuente configurada (no aplica fuzzy matching).
+        """
+        ...
