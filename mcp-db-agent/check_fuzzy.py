@@ -9,4 +9,4 @@ print("Valores reales de centro_costo:", valores_reales)
 
 umbral = repo.obtener_umbral("centro_costo")
 resultado = resolver_valor("diagnostico", valores_reales, umbral)
-print("Resultado para 'diagnostico':", resultado)
+print("Resultado para 'diagnostico':", resultado) 
