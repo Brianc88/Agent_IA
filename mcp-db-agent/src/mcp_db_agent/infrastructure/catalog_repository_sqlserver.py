@@ -3,7 +3,6 @@ Implementación de CatalogRepository usando SQL Server (AGENT_DB).
 """
 
 import json
-import time
 
 from mcp_db_agent.config.settings import DatabaseSettings
 from mcp_db_agent.domain.models import (
@@ -79,11 +78,8 @@ class CatalogRepositorySqlServer:
             cursor = conn.cursor()
             cursor.execute(
                 """
-                SELECT id, nombre_sp, descripcion, ejemplos_preguntas,
-                       nivel_riesgo, estado, timeout_segundos, max_filas_retorno
-                FROM agent_ia.CatalogoIndicadores
-                WHERE estado = 'aprobado' AND activo = 1
-                """
+                Exec agent_ia.sp_mcp_listar_sp 
+                """ 
             )
             filas = cursor.fetchall()
             indicadores = []

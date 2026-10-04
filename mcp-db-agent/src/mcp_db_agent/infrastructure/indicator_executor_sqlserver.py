@@ -10,6 +10,12 @@ class IndicatorExecutorSqlServer:
     def __init__(self, db_settings: DatabaseSettings):
         self._db_settings = db_settings
 
+    def _preparar_valor(self, valor):
+        """Convierte listas a texto delimitado por '|' (CERSALUD no soporta OPENJSON)."""
+        if isinstance(valor, list):
+            return "|".join(str(v) for v in valor)
+        return valor
+
     def ejecutar(
         self,
         nombre_sp: str,
@@ -17,14 +23,15 @@ class IndicatorExecutorSqlServer:
         timeout_segundos: int,
         max_filas_retorno: int,
     ) -> list[dict]:
-        # nombre_sp viene siempre del catálogo (ya validado), nunca directo del LLM.
         placeholders = ", ".join(f"@{clave} = ?" for clave in parametros.keys())
         query = f"EXEC {nombre_sp} {placeholders}" if placeholders else f"EXEC {nombre_sp}"
+
+        valores = [self._preparar_valor(v) for v in parametros.values()]
 
         with crear_conexion(self._db_settings) as conn:
             conn.timeout = timeout_segundos
             cursor = conn.cursor()
-            cursor.execute(query, list(parametros.values()))
+            cursor.execute(query, valores)
 
             columnas = [col[0] for col in cursor.description]
             filas = cursor.fetchmany(max_filas_retorno)
