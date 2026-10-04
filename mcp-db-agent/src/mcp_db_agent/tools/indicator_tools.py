@@ -15,6 +15,32 @@ from mcp_db_agent.domain.value_matching import (
     resolver_lista_o_valor,
 )
 
+def _normalizar_parametros(parametros: dict) -> dict:
+    """
+    Normaliza los valores recibidos desde el LLM antes de cualquier validación.
+
+    - Strings -> MAYÚSCULAS y sin espacios extremos.
+    - Listas -> aplica la misma normalización a cada elemento.
+    - Otros tipos -> se conservan sin cambios.
+    """
+
+    normalizados = {}
+
+    for nombre, valor in parametros.items():
+
+        if isinstance(valor, str):
+            normalizados[nombre] = valor.strip().upper()
+
+        elif isinstance(valor, list):
+            normalizados[nombre] = [
+                item.strip().upper() if isinstance(item, str) else item
+                for item in valor
+            ]
+
+        else:
+            normalizados[nombre] = valor
+
+    return normalizados
 
 def _validar_parametros(
     indicador: Indicador,
@@ -100,11 +126,13 @@ def ejecutar_indicador(
             f"'{nombre_sp}' existe pero no está aprobado para ejecución "
             f"(estado actual: {indicador.estado})."
         )
-
-    # 1. Validar estructura de parámetros
+    # 1. Normalizar valores recibidos desde el LLM
+    parametros = _normalizar_parametros(parametros)
+    
+    # 2. Validar estructura de parámetros
     _validar_parametros(indicador, parametros)
 
-    # 2. Resolver y validar valores categóricos
+    # 3. Resolver y validar valores categóricos
     #    Si no encuentra una coincidencia confiable,
     #    lanza una excepción y NO se ejecuta el SP.
     parametros = _resolver_parametros_categoricos(
@@ -116,7 +144,7 @@ def ejecutar_indicador(
     inicio = time.perf_counter()
 
     try:
-        # 3. Solo aquí se ejecuta realmente el procedimiento SQL
+        # 4. Solo aquí se ejecuta realmente el procedimiento SQL
         filas = executor_repo.ejecutar(
             nombre_sp=indicador.nombre_sp,
             parametros=parametros,

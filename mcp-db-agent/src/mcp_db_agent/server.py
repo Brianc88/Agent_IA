@@ -62,7 +62,7 @@ async def run_indicator(
             "exitoso": False,
             "tipo_error": "parametro_ambiguo",
             "valor_recibido": e.valor_recibido,
-        "   alternativas": e.alternativas,
+            "alternativas": e.alternativas,
         }
     except ValueError as e:
         return {
